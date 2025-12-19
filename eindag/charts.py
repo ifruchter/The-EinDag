@@ -119,22 +119,9 @@ class FishPieChart(ChartFactory):
         labels = counts.index.tolist()
         values = counts.values.astype(float)
 
-        wedges, _ = ax.pie(values, labels=labels, startangle=90)
-        ax.axis('equal')
-
-        total = float(values.sum()) if values.sum() else 1.0
-
-        #for wedge, v in zip(wedges, values):
-            #fish_icons = int(round((v / total) * 40))
-            #fish_icons = min(40, max(1, fish_icons))
-
-            theta1, theta2 = wedge.theta1, wedge.theta2
-            for _ in range(fish_icons):
-                ang = math.radians(random.uniform(theta1, theta2))
-                r = random.uniform(0.2, 0.8)
-                x = r * math.cos(ang)
-                y = r * math.sin(ang)
-                ax.text(x, y, self._fish_text(), ha="center", va="center", fontsize=9)
+        ax.pie(values, labels=labels, startangle=90)
+        ax.axis("equal")
 
         fig.tight_layout()
         return fig
+
