@@ -6,6 +6,25 @@ from eindag.charts_interactive import ChartSpec as IChartSpec, line_chart, pie_c
 import streamlit as st
 import pandas as pd
 
+PRETTY_COLUMNS = {
+    "timestamp": "Timestamp",
+    "site": "Site",
+    "tank_id": "Tank ID",
+    "species": "Species",
+    "temperature_c": "Temperature (°C)",
+    "dissolved_oxygen_mg_l": "Dissolved Oxygen (mg/L)",
+    "ph": "pH",
+    "ammonia_mg_l": "Ammonia (mg/L)",
+    "feed_kg": "Feed Amount (kg)",
+    "health_score": "Health Score",
+    "estimated_fish_count": "Estimated Fish Count",
+}
+
+
+def pretty(col: str) -> str:
+    """Return a human-friendly label for a column name."""
+    return PRETTY_COLUMNS.get(col, col.replace("_", " ").title())
+
 from eindag import (
     APP_NAME,
     TAGLINE,
@@ -100,25 +119,64 @@ def home_view():
         x_col = st.selectbox("X column", ds.columns, index=0)
         y_options = ds.numeric_columns if ds.numeric_columns else ds.columns
         y_col = st.selectbox("Y column (numeric)", y_options, index=0)
-        spec = IChartSpec(title=f"{uploaded.name} — {y_col} over {x_col}", x_col=x_col, y_col=y_col)
+        spec = IChartSpec(
+            title=f"{pretty(y_col)} over {pretty(x_col)}",
+            x_col=x_col,
+            y_col=y_col,
+        )
+
         chart = line_chart(df, spec)
+
+        chart = chart.encode(
+            x=alt.X(x_col, title=pretty(x_col)),
+            y=alt.Y(y_col, title=pretty(y_col)),
+            tooltip=[
+                alt.Tooltip(x_col, title=pretty(x_col)),
+                alt.Tooltip(y_col, title=pretty(y_col)),
+            ],
+        )
+
         st.altair_chart(chart, use_container_width=True)
+
 
 
     elif chart_type == "Fish Pie (category counts)":
         cat_col = st.selectbox("Category column", ds.columns, index=0)
-        spec = IChartSpec(title=f"{uploaded.name} — Distribution of {cat_col}", category_col=cat_col)
-        chart = pie_chart_counts(df, spec)
+        spec = IChartSpec(
+        title=f"Distribution of {pretty(cat_col)}",
+        category_col=cat_col,
+        )
+
+        chart = pie_chart_counts(df, spec).encode(
+            color=alt.Color(f"{cat_col}:N", title=pretty(cat_col)),
+            tooltip=[
+                alt.Tooltip(f"{cat_col}:N", title=pretty(cat_col)),
+                alt.Tooltip("count:Q", title="Count"),
+            ],
+        )
+
         st.altair_chart(chart, use_container_width=True)
 
     else:
         cat_col = st.selectbox("Category column", ds.columns, index=0)
         y_options = ds.numeric_columns if ds.numeric_columns else ds.columns
         y_col = st.selectbox("Numeric column to sum", y_options, index=0)
-        spec = IChartSpec(title=f"{uploaded.name} — Sum({y_col}) by {cat_col}", category_col=cat_col, y_col=y_col)
-        chart = bar_chart_sum_by_category(df, spec)
-        st.altair_chart(chart, use_container_width=True)
+        spec = IChartSpec(
+            title=f"Total {pretty(y_col)} by {pretty(cat_col)}",
+            category_col=cat_col,
+            y_col=y_col,
+        )
 
+        chart = bar_chart_sum_by_category(df, spec).encode(
+            x=alt.X(f"{cat_col}:N", title=pretty(cat_col), sort="-y"),
+            y=alt.Y(f"{y_col}:Q", title=f"Total {pretty(y_col)}"),
+            tooltip=[
+                alt.Tooltip(f"{cat_col}:N", title=pretty(cat_col)),
+                alt.Tooltip(f"{y_col}:Q", title=f"Total {pretty(y_col)}"),
+            ],
+        )
+
+        st.altair_chart(chart, use_container_width=True)
 
     st.markdown("---")
     st.markdown("### Output files (rubric: file I/O)")
