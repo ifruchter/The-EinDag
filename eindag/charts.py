@@ -1,12 +1,3 @@
-"""Charting utilities with an aquaculture theme.
-
-Rubric:
-- Object oriented design with inheritance (ChartFactory -> chart types)
-- Uses third-party libraries (matplotlib, numpy) plus our custom library
-
-Note: Streamlit can display matplotlib figures directly.
-"""
-
 from __future__ import annotations
 
 import math
@@ -32,7 +23,6 @@ class ChartSpec:
 
 
 class ChartFactory(ABC):
-    """Base class for charts. Subclasses must implement render()."""
 
     def __init__(self, df: pd.DataFrame, spec: ChartSpec) -> None:
         self.df = df
@@ -48,7 +38,6 @@ class ChartFactory(ABC):
 
 
 class FishLineChart(ChartFactory):
-    """Line chart where points are decorated with fish icons."""
 
     def render(self) -> plt.Figure:
         x = self.df[self.spec.x_col] if self.spec.x_col else pd.RangeIndex(len(self.df))
@@ -63,7 +52,6 @@ class FishLineChart(ChartFactory):
             ax.text(0.5, 0.5, "Pick a numeric Y column", ha="center", va="center")
             return fig
 
-        # Downsample for readability if huge
         n = len(y)
         step = max(1, n // 200)
         x_s = np.array(x)[::step]
@@ -71,7 +59,6 @@ class FishLineChart(ChartFactory):
 
         ax.plot(x_s, y_s)
 
-        # Add fish icons on some points
         fish_every = max(1, len(x_s) // 25)
         for i in range(0, len(x_s), fish_every):
             ax.text(x_s[i], y_s[i], self._fish_text(), fontsize=10, ha="center", va="center")
@@ -83,7 +70,6 @@ class FishLineChart(ChartFactory):
 
 
 class FishBarChart(ChartFactory):
-    """Bar chart where each bar is represented by stacked fish icons."""
 
     def render(self) -> plt.Figure:
         cat = self.spec.category_col
@@ -119,7 +105,6 @@ class FishBarChart(ChartFactory):
 
 
 class FishPieChart(ChartFactory):
-    """Pie chart where each slice has fish icons placed inside it."""
 
     def render(self) -> plt.Figure:
         cat = self.spec.category_col
