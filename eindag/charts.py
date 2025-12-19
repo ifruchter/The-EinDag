@@ -33,8 +33,8 @@ class ChartFactory(ABC):
         raise NotImplementedError
 
     # Shared helper
-    def _fish_text(self) -> str:
-        return "🐟"
+    #def _fish_text(self) -> str:
+        #return "🐟"
 
 
 class FishLineChart(ChartFactory):
@@ -60,8 +60,8 @@ class FishLineChart(ChartFactory):
         ax.plot(x_s, y_s)
 
         fish_every = max(1, len(x_s) // 25)
-        for i in range(0, len(x_s), fish_every):
-            ax.text(x_s[i], y_s[i], self._fish_text(), fontsize=10, ha="center", va="center")
+        #for i in range(0, len(x_s), fish_every):
+            #ax.text(x_s[i], y_s[i], self._fish_text(), fontsize=10, ha="center", va="center")
 
         ax.set_xlabel(self.spec.x_col or "index")
         ax.set_ylabel(self.spec.y_col or "value")
@@ -91,14 +91,13 @@ class FishBarChart(ChartFactory):
         ax.bar(labels, vals)
         ax.tick_params(axis='x', rotation=45)
 
-        # Decorate top of each bar with fish icons proportional to bar height
+        
         max_val = float(np.nanmax(vals)) if len(vals) else 1.0
-        for i, v in enumerate(vals):
-            # Decide fish count; cap for readability
-            fish_count = int(round((v / max_val) * 25))
-            fish_count = min(25, max(1, fish_count))
-            for f in range(fish_count):
-                ax.text(i, (v * (f + 1) / (fish_count + 1)), self._fish_text(), ha="center", va="center", fontsize=8)
+        #for i, v in enumerate(vals):
+            #fish_count = int(round((v / max_val) * 25))
+            #fish_count = min(25, max(1, fish_count))
+            #for f in range(fish_count):
+                #ax.text(i, (v * (f + 1) / (fish_count + 1)), self._fish_text(), ha="center", va="center", fontsize=8)
 
         fig.tight_layout()
         return fig
@@ -125,16 +124,12 @@ class FishPieChart(ChartFactory):
 
         total = float(values.sum()) if values.sum() else 1.0
 
-        # Place fish icons in each wedge; 1 fish = fish_per_icon individuals (visual metaphor)
-        # This is not an animation, but it clearly 'incorporates' the fish theme.
-        for wedge, v in zip(wedges, values):
-            # fish icons proportional to slice size; cap for readability
-            fish_icons = int(round((v / total) * 40))
-            fish_icons = min(40, max(1, fish_icons))
+        #for wedge, v in zip(wedges, values):
+            #fish_icons = int(round((v / total) * 40))
+            #fish_icons = min(40, max(1, fish_icons))
 
             theta1, theta2 = wedge.theta1, wedge.theta2
             for _ in range(fish_icons):
-                # random angle within wedge
                 ang = math.radians(random.uniform(theta1, theta2))
                 r = random.uniform(0.2, 0.8)
                 x = r * math.cos(ang)
