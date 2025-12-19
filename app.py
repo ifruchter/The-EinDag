@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import altair as alt
+from eindag.charts_interactive import ChartSpec as IChartSpec, line_chart, pie_chart_counts, bar_chart_sum_by_category
 
 import streamlit as st
 import pandas as pd
@@ -85,7 +87,6 @@ def home_view():
 
     st.success(f"Saved upload to `{rel_path}`")
 
-    # Preview
     st.markdown("### Quick preview")
     st.write(f"Rows: **{ds.n_rows}** | Columns: **{len(ds.columns)}**")
     st.dataframe(pd.DataFrame(ds.preview_rows), use_container_width=True)
@@ -99,23 +100,25 @@ def home_view():
         x_col = st.selectbox("X column", ds.columns, index=0)
         y_options = ds.numeric_columns if ds.numeric_columns else ds.columns
         y_col = st.selectbox("Y column (numeric)", y_options, index=0)
-        spec = ChartSpec(title=f"{uploaded.name} — {y_col} over {x_col}", x_col=x_col, y_col=y_col)
-        fig = FishLineChart(df, spec).render()
-        st.pyplot(fig, use_container_width=True)
+        spec = IChartSpec(title=f"{uploaded.name} — {y_col} over {x_col}", x_col=x_col, y_col=y_col)
+        chart = line_chart(df, spec)
+        st.altair_chart(chart, use_container_width=True)
+
 
     elif chart_type == "Fish Pie (category counts)":
         cat_col = st.selectbox("Category column", ds.columns, index=0)
-        spec = ChartSpec(title=f"{uploaded.name} — Distribution of {cat_col}", category_col=cat_col)
-        fig = FishPieChart(df, spec).render()
-        st.pyplot(fig, use_container_width=True)
+        spec = IChartSpec(title=f"{uploaded.name} — Distribution of {cat_col}", category_col=cat_col)
+        chart = pie_chart_counts(df, spec)
+        st.altair_chart(chart, use_container_width=True)
 
     else:
         cat_col = st.selectbox("Category column", ds.columns, index=0)
         y_options = ds.numeric_columns if ds.numeric_columns else ds.columns
         y_col = st.selectbox("Numeric column to sum", y_options, index=0)
-        spec = ChartSpec(title=f"{uploaded.name} — Sum({y_col}) by {cat_col}", category_col=cat_col, y_col=y_col)
-        fig = FishBarChart(df, spec).render()
-        st.pyplot(fig, use_container_width=True)
+        spec = IChartSpec(title=f"{uploaded.name} — Sum({y_col}) by {cat_col}", category_col=cat_col, y_col=y_col)
+        chart = bar_chart_sum_by_category(df, spec)
+        st.altair_chart(chart, use_container_width=True)
+
 
     st.markdown("---")
     st.markdown("### Output files (rubric: file I/O)")
@@ -123,7 +126,6 @@ def home_view():
     metrics = compute_basic_metrics(df)
     json_rel = write_json(REPO_ROOT, "last_summary.json", metrics)
 
-    # Also write a tidy CSV of numeric summaries for convenience
     rows = []
     for col, stats in metrics.get("numeric_summary", {}).items():
         rows.append({"column": col, **stats})
@@ -133,7 +135,6 @@ def home_view():
     st.code(json_rel)
     st.code(csv_rel)
 
-    # Download buttons
     json_abs = os.path.join(REPO_ROOT, json_rel)
     csv_abs = os.path.join(REPO_ROOT, csv_rel)
 
