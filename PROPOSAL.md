@@ -15,23 +15,13 @@ The EinDag provides a simple flow:
 3. Automatically:
    - Previews the data
    - Computes summary statistics
-   - Generates fish-themed charts (line, pie, bar)
+   - Generates charts (line, pie, bar)
    - Writes shareable output files (JSON + CSV)
 
 ### Why it’s different
 Instead of a “bird’s eye view” management dashboard, The EinDag focuses on the operator’s reality:
 - CSV-first workflow (works with the files they already have)
 - Fast, visual “tank-by-tank” inspection
-- A playful aquaculture-themed presentation that makes the demo memorable
-
-### MVP deliverables (for this class)
-- A working web app you can run from the GitHub repo (Streamlit)
-- A custom Python library (`eindag/`) with:
-  - Classes, functions, and constants
-  - Inheritance (chart base class + subclasses)
-  - File I/O (save uploads + write outputs)
-  - Iteration / decision logic
-- A generator that can create **10,000+ rows** of synthetic tank readings
 
 ### Future build-on ideas
 - Per-tank “health alerts” and thresholds
