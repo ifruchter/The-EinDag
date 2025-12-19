@@ -1,6 +1,6 @@
 """Lightweight analytics for CSV uploads.
 
-This is intentionally simple so you can build on it later.
+This is intentionally simple so it can be built on later.
 """
 
 from __future__ import annotations
