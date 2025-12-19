@@ -1,10 +1,4 @@
 """Simple authentication for the MVP.
-
-Rubric:
-- Uses iteration + decision-making
-- Uses a class
-
-IMPORTANT: For class demo only. Do not use this approach in production.
 """
 
 from __future__ import annotations
