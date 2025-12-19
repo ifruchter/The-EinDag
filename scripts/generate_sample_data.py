@@ -1,14 +1,3 @@
-"""Generate synthetic aquaculture tank sensor data (10,000+ rows).
-
-Rubric:
-- Programmatically formed data
-- Iteration + decision making
-- File output
-
-Usage:
-  python scripts/generate_sample_data.py --rows 12000 --out data/sample_tank_readings.csv
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -30,14 +19,12 @@ def generate(rows: int, seed: int | None = 7) -> pd.DataFrame:
     species = ["tilapia", "salmon", "shrimp", "catfish"]
 
     data = []
-    # Iteration + decision making
     for i in range(rows):
         ts = start + timedelta(minutes=i)
         site = random.choice(sites)
         tank = random.choice(tanks)
         sp = random.choice(species)
 
-        # baseline profiles by species
         if sp == "salmon":
             temp_base = 12
             do_base = 9
@@ -57,7 +44,6 @@ def generate(rows: int, seed: int | None = 7) -> pd.DataFrame:
         ammonia_mg_l = round(max(0, 0.15 + random.gauss(0, 0.05)), 3)
         feed_kg = round(max(0, random.gauss(1.5, 0.4)), 2)
 
-        # A simple "health score" (0-100) with penalties
         health = 100
         if dissolved_oxygen_mg_l < 5:
             health -= 25
@@ -69,7 +55,6 @@ def generate(rows: int, seed: int | None = 7) -> pd.DataFrame:
             health -= 10
         health = max(0, min(100, health))
 
-        # Fish count example: each row is a snapshot; some tanks fluctuate
         estimated_fish_count = int(800 + random.gauss(0, 30))
 
         data.append(
